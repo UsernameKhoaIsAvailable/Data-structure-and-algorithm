@@ -6,7 +6,7 @@ public class Main {
     public static boolean isUnique(String str) {
         HashSet<Character> charSet = new HashSet<>();
 
-        for (int i = 0; i < str.length() - 1; i++) {
+        for (int i = 0; i < str.length() - 1; i++) { //O(n)
             char character = str.charAt(i);
 
             if (charSet.contains(character)) {
