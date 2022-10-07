@@ -18,11 +18,7 @@ public class Main {
             characterHashSet2.add(char2);
         }
 
-        if (characterHashSet1.size() == characterHashSet2.size()) {
-            return true;
-        }
-
-        return false;
+        return characterHashSet1.size() == characterHashSet2.size();
     }
 
     public static boolean test1() {
