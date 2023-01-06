@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class PhongBan {
     private String tenPhongBan;
     private byte soNhanVien = 0;
-    public static byte soNhanVienMax = 100;
+    public static final byte SO_NHAN_VIEN_MAX = 100;
     ArrayList<NhanVien> danhSachNV = new ArrayList<>();
 
     public PhongBan(String tenPhongBan, NhanVien nhanVien) {
@@ -15,7 +15,7 @@ public class PhongBan {
     }
 
     public boolean themNV(NhanVien nhanVienMoi) {
-        if(soNhanVien == soNhanVienMax) {
+        if(soNhanVien == SO_NHAN_VIEN_MAX) {
             return false;
         }
         danhSachNV.add(nhanVienMoi);
