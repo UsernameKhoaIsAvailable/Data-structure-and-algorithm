@@ -3,8 +3,8 @@ package aggregationAndInheritance;
 public class NhanVien {
     private String tenNhanVien;
     private double heSoLuong;
-    public  double luongCoBan = 750000;
-    public  double luongMax = 20000000;
+    public static double luongCoBan = 750000;
+    public static double luongMax = 20000000;
 
     public NhanVien(String tenNhanVien, double heSoLuong) {
         this.heSoLuong = heSoLuong;

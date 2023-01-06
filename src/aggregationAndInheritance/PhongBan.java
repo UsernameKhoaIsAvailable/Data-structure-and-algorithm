@@ -1,16 +1,17 @@
 package aggregationAndInheritance;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class PhongBan {
     private String tenPhongBan;
     private byte soNhanVien = 0;
-    public  byte soNhanVienMax = 100;
-    Stack<NhanVien> danhSachNV = new Stack<>();
+    public static byte soNhanVienMax = 100;
+    ArrayList<NhanVien> danhSachNV = new ArrayList<>();
 
     public PhongBan(String tenPhongBan, NhanVien nhanVien) {
         this.tenPhongBan = tenPhongBan;
-        danhSachNV.push(nhanVien);
+        danhSachNV.add(nhanVien);
         soNhanVien = (byte) ((int)soNhanVien + 1);
     }
 
@@ -18,7 +19,7 @@ public class PhongBan {
         if(soNhanVien == soNhanVienMax) {
             return false;
         }
-        danhSachNV.push(nhanVienMoi);
+        danhSachNV.add(nhanVienMoi);
         soNhanVien = (byte) ((int)soNhanVien + 1);
         return true;
     }
@@ -27,16 +28,15 @@ public class PhongBan {
         if(soNhanVien == 1) {
             throw new Exception("Phong ban phai co it nhat 1 nhan vien");
         }
+        int lastIndex = (int) soNhanVien - 1;
         soNhanVien = (byte) ((int)soNhanVien - 1);
-        return danhSachNV.pop();
+        return danhSachNV.remove(lastIndex);
     }
 
     public double tongLuong() {
-        Stack<NhanVien> copieDanhsachNV = (Stack<NhanVien>) danhSachNV.clone();
-
         int luong = 0;
-        while (!copieDanhsachNV.empty()) {
-            luong += copieDanhsachNV.pop().TinhLuong();
+        for(int i = 0; i < soNhanVien; i++) {
+            luong += danhSachNV.get(i).TinhLuong();
         }
         return luong;
     }
@@ -51,9 +51,8 @@ public class PhongBan {
         System.out.printf("Nhan vien");
         System.out.println();
 
-        Stack<NhanVien> copieDanhsachNV = (Stack<NhanVien>) danhSachNV.clone();
-        while (!copieDanhsachNV.empty()) {
-            copieDanhsachNV.pop().inTTin();
+        for(int i = 0; i < soNhanVien; i++) {
+            danhSachNV.get(i).inTTin();
         }
     }
 }
