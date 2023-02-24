@@ -34,14 +34,18 @@ public class Visit {
     }
 
     public double getTotalExpense() {
-        return serviceExpense + productExpense;
+        double discountAmount;
+        if(!customer.isMember()) {
+            discountAmount = 0;
+        }
+        else{
+            discountAmount = DiscountRate.getProductDiscountRate(customer.getMemberType()) * productExpense + DiscountRate.getServiceDiscountRate(customer.getMemberType()) * serviceExpense;
+        }
+        return serviceExpense + productExpense - discountAmount;
     }
 
     @Override
     public String toString() {
-        return customer +
-                ", date: " + date +
-                ", serviceExpense: " + serviceExpense +
-                ", productExpense: " + productExpense;
+        return customer + ", date: " + date + ", serviceExpense: " + serviceExpense + ", productExpense: " + productExpense;
     }
 }

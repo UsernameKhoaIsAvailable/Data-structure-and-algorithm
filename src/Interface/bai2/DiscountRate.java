@@ -9,26 +9,22 @@ public class DiscountRate {
     private static double productDiscountSilver = 0.1;
 
     public static double getServiceDiscountRate(String type) {
-        if(type.equalsIgnoreCase("premium")) {
+        if (type.equalsIgnoreCase("premium")) {
             return serviceDiscountPremium;
-            }
-        else if(type.equalsIgnoreCase("gold")) {
+        } else if (type.equalsIgnoreCase("gold")) {
             return serviceDiscountGold;
-        }
-        else if (type.equalsIgnoreCase("silver")) {
+        } else if (type.equalsIgnoreCase("silver")) {
             return serviceDiscountSilver;
         }
         return 0;
     }
 
     public static double getProductDiscountRate(String type) {
-        if(type.equalsIgnoreCase("premium")) {
+        if (type.equalsIgnoreCase("premium")) {
             return productDiscountPremium;
-        }
-        else if(type.equalsIgnoreCase("gold")) {
+        } else if (type.equalsIgnoreCase("gold")) {
             return productDiscountGold;
-        }
-        else if (type.equalsIgnoreCase("silver")) {
+        } else if (type.equalsIgnoreCase("silver")) {
             return productDiscountSilver;
         }
         return 0;
