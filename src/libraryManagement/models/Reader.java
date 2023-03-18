@@ -1,8 +1,9 @@
 package libraryManagement.models;
 
+import java.util.ArrayList;
 import java.util.Date;
 
-public class Reader {
+public class Reader implements Identifiable {
     private String id;
     private Date date;
     private String name;
@@ -10,9 +11,11 @@ public class Reader {
     private String gender;
     private String idCard;
     private String address;
-    private boolean allowToBorrow;
+    private boolean canBorrow = true;
+    private int bookBorrowed = 0;
+    private ArrayList<String> transaction = new ArrayList<>();
 
-    public Reader(String id, Date date, String name, Date dateOfBirth, String gender, String idCard, String address, boolean allowToBorrow) {
+    public Reader(String id, Date date, String name, Date dateOfBirth, String gender, String idCard, String address) {
         this.id = id;
         this.date = date;
         this.name = name;
@@ -20,7 +23,6 @@ public class Reader {
         this.gender = gender;
         this.idCard = idCard;
         this.address = address;
-        this.allowToBorrow = allowToBorrow;
     }
 
     public String getId() {
@@ -79,11 +81,33 @@ public class Reader {
         this.address = address;
     }
 
-    public boolean isAllowToBorrow() {
-        return allowToBorrow;
+    public boolean isAllowedToBorrow() {
+        if(bookBorrowed >= 10) {
+            canBorrow = false;
+        }
+        else {
+            canBorrow = true;
+        }
+        return canBorrow;
     }
 
-    public void setAllowToBorrow(boolean allowToBorrow) {
-        this.allowToBorrow = allowToBorrow;
+    public int getBookBorrowed() {
+        return bookBorrowed;
+    }
+
+    public void setBookBorrowed(int bookBorrowed) {
+        this.bookBorrowed = bookBorrowed;
+    }
+
+    public void addTransaction(String id) {
+        transaction.add(id);
+    }
+
+    public ArrayList<String> getTransaction() {
+        return transaction;
+    }
+
+    public String getSearchableValue() {
+        return id + name;
     }
 }

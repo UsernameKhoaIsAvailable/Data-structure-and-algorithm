@@ -1,8 +1,9 @@
 package libraryManagement.models;
 
+import libraryManagement.utils.Utils;
 import java.util.Date;
 
-public class Title {
+public class Title implements Identifiable {
     private String id;
     private String name;
     private String bookshelf;
@@ -11,9 +12,9 @@ public class Title {
     private Date releaseDate;
     private String publisher;
     private String language;
-    private int numberOfBooks;
+    private int price;
 
-    public Title(String id, String name, String bookshelf, String category, String author, Date releaseDate, String publisher, String language, int numberOfBooks) {
+    public Title(String id, String name, String bookshelf, String category, String author, Date releaseDate, String publisher, String language, int price) {
         this.id = id;
         this.name = name;
         this.bookshelf = bookshelf;
@@ -22,7 +23,7 @@ public class Title {
         this.releaseDate = releaseDate;
         this.publisher = publisher;
         this.language = language;
-        this.numberOfBooks = numberOfBooks;
+        this.price = price;
     }
 
     public String getId() {
@@ -89,11 +90,28 @@ public class Title {
         this.language = language;
     }
 
-    public int getNumberOfBooks() {
-        return numberOfBooks;
+    public int getPrice() {
+        return price;
     }
 
-    public void setNumberOfBooks(int numberOfBooks) {
-        this.numberOfBooks = numberOfBooks;
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public String getSearchableValue() {
+        return id + name;
+    }
+
+    @Override
+    public String toString() {
+        String dateString = Utils.convertDateToString(releaseDate);
+        return "Id: " + id + '\n' +
+                "Name: " + name + '\n' +
+                "Bookshelf: " + bookshelf + '\n' +
+                "Category: " + category + '\n' +
+                "Author: " + author + '\n' +
+                "Release date: " + dateString + '\n' +
+                "Publisher: " + publisher + '\n' +
+                "Language: " + language + '\n';
     }
 }
