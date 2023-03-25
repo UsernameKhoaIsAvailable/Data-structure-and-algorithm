@@ -13,42 +13,39 @@ public class BookViews {
         Storage<Title> titleStorage = new Storage<>(Title.class.getSimpleName());
         System.out.println("Enter book's name: ");
         String name = scanner.nextLine();
-        System.out.println("Enter bookshelf: ");
-        String bookshelf = scanner.nextLine();
         System.out.println("Enter category: ");
         String category = scanner.nextLine();
         System.out.println("Enter author: ");
         String author = scanner.nextLine();
-        System.out.println("Enter date(dd/mm/yyyy): ");
-        String dateString = scanner.nextLine();
-        Date date = Utils.convertStringToDate(dateString);
+        Date date = Utils.getDate();
         System.out.println("Enter publisher: ");
         String publisher = scanner.nextLine();
         System.out.println("Enter language: ");
         String language = scanner.nextLine();
-        System.out.println("Enter price: ");
-        int price = scanner.nextInt();
-        Title title = new Title(id, name, bookshelf, category, author, date, publisher, language, price);
+        int price;
+        while (true) {
+            try {
+                System.out.println("Enter price: ");
+                price = scanner.nextInt();
+                if(price < 0) {
+                    throw new InputMismatchException();
+                }
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Wrong format!");
+                scanner.next();
+            }
+        }
+        Title title = new Title(id, name, category, author, date, publisher, language, price);
         titleStorage.add(title);
         System.out.println("Title added");
     }
 
-    public static void addBook() {
+    public static void addBook(String titleId) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter title's id: ");
-        String titleId = scanner.nextLine();
-
-        Storage<Title> titleStorage = new Storage<>(Title.class.getSimpleName());
-        if (!titleStorage.exists(titleId)) {
-            System.out.println("Title does not exist");
-            return;
-        }
-
         Storage<Book> bookStorage = new Storage<>(Book.class.getSimpleName());
         String id = Utils.generateId(12);
-        System.out.println("Enter import date(dd/mm/yyyy): ");
-        String dateString = scanner.nextLine();
-        Date date = Utils.convertStringToDate(dateString);
+        Date date = Utils.getDate();
         System.out.println("Enter location of book: ");
         String location = scanner.nextLine();
         boolean borrowed = false;

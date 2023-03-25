@@ -31,7 +31,7 @@ public class Storage<T extends Identifiable> {
             return obj;
         }
         catch (IOException | ClassNotFoundException e) {
-
+            System.out.println("Error!");
         }
         return null;
     }
@@ -46,7 +46,7 @@ public class Storage<T extends Identifiable> {
             fileOutputStream.close();
         }
         catch (IOException e) {
-
+            System.out.println("Error!");
         }
     }
 
@@ -77,5 +77,20 @@ public class Storage<T extends Identifiable> {
             }
         }
         return list;
+    }
+
+    public ArrayList<T> list() {
+        File dir = new File(databasePath);
+        String[] files = dir.list();
+        if (files == null) {
+            return null;
+        }
+
+        ArrayList<T> arrayList = new ArrayList<>();
+        for (String file : files) {
+            T obj = getById(file);
+            arrayList.add(obj);
+        }
+        return arrayList;
     }
 }

@@ -3,12 +3,10 @@ package libraryManagement.views;
 import libraryManagement.models.*;
 import libraryManagement.storage.Storage;
 import libraryManagement.utils.Utils;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Views {
     public static void views() {
@@ -27,25 +25,38 @@ public class Views {
         }
     }
 
-    public static int showChoices(List<String> choices) {
+    public static int showChoices(List<String> choices, String guide) {
         Scanner scanner = new Scanner(System.in);
-        int choice;
+        int choice = -1;
         ArrayList<Integer> allChoices = new ArrayList<>();
         do {
             System.out.println("-------- LIBRARY MANAGEMENT --------");
             for (int i = 0; i < choices.size(); i++) {
-                allChoices.add(i+1);
+                allChoices.add(i + 1);
                 System.out.printf("[%d] %s\n", i + 1, choices.get(i));
             }
             System.out.println("------------------------------------");
+            if (guide != null) {
+                System.out.println("Choose a " + guide);
+            }
             System.out.print("Choose: ");
-            choice = scanner.nextInt();
+            try {
+                choice = scanner.nextInt();
+            }
+            catch (InputMismatchException e) {
+                System.out.println("Wrong format!");
+                scanner.next();
+            }
         } while (!allChoices.contains(choice));
         return choice;
     }
 
     public static int showChoices(String[] choices) {
-        return showChoices(List.of(choices));
+        return showChoices(List.of(choices), null);
+    }
+
+    public static int showChoices(List<String> choices) {
+        return showChoices(choices, null);
     }
 
     public static void manageBooks() {
@@ -66,35 +77,46 @@ public class Views {
         if (choice == 1) {
             BookViews.addTitle();
         } else {
-            BookViews.addBook();
+            addBook();
         }
+    }
+
+    public static void addBook() {
+        Storage<Title> titleStorage = new Storage<>(Title.class.getSimpleName());
+        ArrayList<Title> titleArrayList = titleStorage.list();
+        ArrayList<String> titleName = new ArrayList<>();
+        for (Title title : titleArrayList) {
+            titleName.add(title.getName());
+        }
+        int choice = showChoices(titleName, "title");
+        Title title = titleArrayList.get(choice - 1);
+        BookViews.addBook(title.getId());
     }
 
     public static void deleteBookAndTitle() {
         Scanner scanner = new Scanner(System.in);
         String[] choices = {"Delete title", "Delete book"};
         int choice = showChoices(List.of(choices));
-        System.out.println("Enter title name: ");
-        String keyword = scanner.nextLine();
         Storage<Title> titleStorage = new Storage<>(Title.class.getSimpleName());
-        ArrayList<Title> titleArrayList = titleStorage.search(keyword);
+        ArrayList<Title> titleArrayList = titleStorage.list();
         ArrayList<String> titleName = new ArrayList<>();
-        for(Title tile : titleArrayList) {
+        for (Title tile : titleArrayList) {
             titleName.add(tile.getName());
         }
-        int index = showChoices(titleName);
+        int index = showChoices(titleName, "title");
         if (choice == 1) {
             BookViews.deleteTitle(titleArrayList.get(index - 1).getId());
         } else {
-            keyword = titleArrayList.get(index - 1).getId();
+            String keyword = titleArrayList.get(index - 1).getId();
             Storage<Book> bookStorage = new Storage<>(Book.class.getSimpleName());
             ArrayList<Book> bookArrayList = bookStorage.search(keyword);
-            ArrayList<String> bookId = new ArrayList<>();
-            for(Book book : bookArrayList) {
-                bookId.add(book.getId());
+            ArrayList<String> bookInfo = new ArrayList<>();
+            for (Book book : bookArrayList) {
+                String info = book.getLocation() + " " + book.getImportDate();
+                bookInfo.add(info);
             }
-            index = showChoices(bookId);
-            BookViews.deleteBook(bookId.get(index-1));
+            index = showChoices(bookInfo, "book");
+            BookViews.deleteBook(bookInfo.get(index - 1));
         }
     }
 
@@ -109,7 +131,8 @@ public class Views {
             return;
         }
         for (Title title : titleArrayList) {
-            System.out.println(title.getName() + " " + title.getId());
+            System.out.println(title);
+            System.out.println();
         }
     }
 
@@ -131,12 +154,13 @@ public class Views {
         String keyword = scanner.nextLine();
         Storage<Reader> readerStorage = new Storage<>(Reader.class.getSimpleName());
         ArrayList<Reader> readerArrayList = readerStorage.search(keyword);
-        ArrayList<String> readerId = new ArrayList<>();
+        ArrayList<String> readerNameBirthday = new ArrayList<>();
         for (Reader reader : readerArrayList) {
-            readerId.add(reader.getId());
+            String nameBirthday = reader.getName() + " " + reader.getDateOfBirth();
+            readerNameBirthday.add(nameBirthday);
         }
-        int index = showChoices(readerId);
-        readerStorage.delete(readerId.get(index-1));
+        int index = showChoices(readerNameBirthday, "reader");
+        ReaderViews.deleteReader(readerNameBirthday.get(index - 1));
     }
 
     public static void searchReader() {
@@ -150,7 +174,8 @@ public class Views {
             return;
         }
         for (Reader reader : readerArrayList) {
-            System.out.println(reader.getName());
+            System.out.println(reader);
+            System.out.println();
         }
     }
 
@@ -160,7 +185,7 @@ public class Views {
         if (choice == 1) {
             borrow();
         } else if (choice == 2) {
-            _return();
+            returnBook();
         } else {
             extendExpireDate();
         }
@@ -172,96 +197,97 @@ public class Views {
         String keyword = scanner.nextLine();
         Storage<Reader> readerStorage = new Storage<>(Reader.class.getSimpleName());
         ArrayList<Reader> readerArrayList = readerStorage.search(keyword);
-        ArrayList<String> readerId = new ArrayList<>();
-        for(Reader reader : readerArrayList) {
-            readerId.add(reader.getId());
+        ArrayList<String> readerNameBirthday = new ArrayList<>();
+        for (Reader reader : readerArrayList) {
+            String nameBirthday = reader.getName() + " " + reader.getDateOfBirth();
+            readerNameBirthday.add(nameBirthday);
         }
-        int choice = showChoices(readerId);
-        Reader reader = readerArrayList.get(choice-1);
-        if(reader.isAllowedToBorrow()) {
+        int choice = showChoices(readerNameBirthday, "reader");
+        Reader reader = readerArrayList.get(choice - 1);
+        if (reader.isAllowedToBorrow()) {
             System.out.println("Number of books borrowed: ");
             int bookBorrowed = scanner.nextInt();
-            if(reader.getBookBorrowed() + bookBorrowed > 10) {
+            if (reader.getBookBorrowed() + bookBorrowed > 10) {
                 System.out.println("Exceed number of books borrowed");
                 return;
             }
             Transaction transaction = TransactionViews.addTransaction();
             reader.setBookBorrowed(reader.getBookBorrowed() + bookBorrowed);
-            reader.setBookBorrowed(bookBorrowed);
-            for(int i = 0; i < bookBorrowed; i++) {
+            for (int i = 0; i < bookBorrowed; i++) {
                 System.out.println("Enter book name or id: ");
                 keyword = scanner.nextLine();
                 Storage<Title> titleStorage = new Storage<>(Title.class.getSimpleName());
                 ArrayList<Title> titleArrayList = titleStorage.search(keyword);
                 ArrayList<String> titleName = new ArrayList<>();
-                for(Title title : titleArrayList) {
+                for (Title title : titleArrayList) {
                     titleName.add(title.getName());
                 }
-                choice = showChoices(titleName);
-                int price = titleArrayList.get(choice-1).getPrice();
-                keyword = titleArrayList.get(choice-1).getId();
+                choice = showChoices(titleName, "title");
+                int price = titleArrayList.get(choice - 1).getPrice();
+                keyword = titleArrayList.get(choice - 1).getId();
                 Storage<Book> bookStorage = new Storage<>(Book.class.getSimpleName());
                 ArrayList<Book> bookArrayList = bookStorage.search(keyword);
-                ArrayList<String> bookId = new ArrayList<>();
-                for(Book book : bookArrayList) {
-                    if(!book.isBorrowed()) {
-                        bookId.add(book.getId());
+                ArrayList<String> bookInfo = new ArrayList<>();
+                for (Book book : bookArrayList) {
+                    if (!book.isBorrowed()) {
+                        String info = book.getLocation() + " " + book.getImportDate();
+                        bookInfo.add(info);
                     }
                 }
-                if(bookId.isEmpty()) {
+                if (bookInfo.isEmpty()) {
                     reader.setBookBorrowed(reader.getBookBorrowed() - 1);
                     System.out.println("Out of books");
                     continue;
                 }
-                choice = showChoices(bookId);
-                Book book = bookArrayList.get(choice-1);
+                choice = showChoices(bookInfo, "book");
+                Book book = bookArrayList.get(choice - 1);
                 book.setBorrowed(true);
+                bookStorage.add(book);
                 TransactionLine transactionLine = TransactionViews.addTransactionLine(transaction.getBorrowDate(), book, price);
                 transaction.addTransactionLine(transactionLine.getId());
             }
-            if(!transaction.isTransactionLinesEmpty()) {
+            if (!transaction.isTransactionLinesEmpty()) {
                 reader.addTransaction(transaction.getId());
             }
             readerStorage.add(reader);
             Storage<Transaction> transactionStorage = new Storage<>(Transaction.class.getSimpleName());
             transactionStorage.add(transaction);
-        }
-        else {
+        } else {
             System.out.println("Reader is not allowed to borrow");
         }
     }
 
-    public static void _return() {
+    public static void returnBook() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter reader name or id: ");
         String keyword = scanner.nextLine();
         Storage<Reader> readerStorage = new Storage<>(Reader.class.getSimpleName());
         ArrayList<Reader> readerArrayList = readerStorage.search(keyword);
-        ArrayList<String> readerId = new ArrayList<>();
-        for(Reader reader : readerArrayList) {
-            readerId.add(reader.getId());
+        ArrayList<String> readerInfo = new ArrayList<>();
+        for (Reader reader : readerArrayList) {
+            String info = reader.getName() + " " + reader.getDateOfBirth();
+            readerInfo.add(info);
         }
-        int choice = showChoices(readerId);
-        Reader reader = readerArrayList.get(choice-1);
+        int choice = showChoices(readerInfo, "book");
+        Reader reader = readerArrayList.get(choice - 1);
         choice = showChoices(reader.getTransaction());
-        keyword = reader.getTransaction().get(choice-1);
-        reader.getTransaction().remove(choice-1);
+        keyword = reader.getTransaction().get(choice - 1);
+        reader.getTransaction().remove(choice - 1);
         Storage<Transaction> transactionStorage = new Storage<>(Transaction.class.getSimpleName());
         Transaction transaction = transactionStorage.search(keyword).get(0);
         choice = showChoices(transaction.getTransactionLines());
         Storage<TransactionLine> transactionLineStorage = new Storage<>(TransactionLine.class.getSimpleName());
-        keyword = transaction.getTransactionLines().get(choice-1);
-        transaction.getTransactionLines().remove(choice-1);
+        keyword = transaction.getTransactionLines().get(choice - 1);
+        transaction.getTransactionLines().remove(choice - 1);
         TransactionLine transactionLine = transactionLineStorage.search(keyword).get(0);
         LocalDateTime localDateTime = LocalDateTime.now();
         Date returnDate = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
         transactionLine.setReturnDate(returnDate);
         int days = Utils.subtractDate(transactionLine.getExpireDate(), returnDate);
-        if(days <= 0) {
+        if (days <= 0) {
             transactionLine.setFine(0);
-        }
-        else {
-            System.out.printf("Return book late. Fine %f", transactionLine.getFine());
+        } else {
+            System.out.printf("Return book late. Fine %f\n", transactionLine.getFine());
         }
         readerStorage.add(reader);
         transactionStorage.add(transaction);
@@ -274,23 +300,22 @@ public class Views {
         Storage<Reader> readerStorage = new Storage<>(Reader.class.getSimpleName());
         ArrayList<Reader> readerArrayList = readerStorage.search(keyword);
         ArrayList<String> readerId = new ArrayList<>();
-        for(Reader reader : readerArrayList) {
+        for (Reader reader : readerArrayList) {
             readerId.add(reader.getId());
         }
         int choice = showChoices(readerId);
-        Reader reader = readerArrayList.get(choice-1);
+        Reader reader = readerArrayList.get(choice - 1);
         choice = showChoices(reader.getTransaction());
-        keyword = reader.getTransaction().get(choice-1);
+        keyword = reader.getTransaction().get(choice - 1);
         Storage<Transaction> transactionStorage = new Storage<>(Transaction.class.getSimpleName());
         Transaction transaction = transactionStorage.search(keyword).get(0);
         choice = showChoices(transaction.getTransactionLines());
         Storage<TransactionLine> transactionLineStorage = new Storage<>(TransactionLine.class.getSimpleName());
-        keyword = transaction.getTransactionLines().get(choice-1);
+        keyword = transaction.getTransactionLines().get(choice - 1);
         TransactionLine transactionLine = transactionLineStorage.search(keyword).get(0);
-        if(transactionLine.isExtended()) {
+        if (transactionLine.isExtended()) {
             System.out.println("Expire already extended");
-        }
-        else {
+        } else {
             transactionLine.setExtended(true);
             transactionLine.setExpireDate(TransactionViews.extendExpireDate(transactionLine));
         }

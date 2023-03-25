@@ -22,7 +22,7 @@ public class TransactionLine implements Identifiable {
 
     @Override
     public String getSearchableValue() {
-        return null;
+        return id;
     }
 
     public void setId(String id) {

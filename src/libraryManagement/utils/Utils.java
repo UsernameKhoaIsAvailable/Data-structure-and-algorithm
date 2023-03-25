@@ -2,6 +2,8 @@ package libraryManagement.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -55,5 +57,11 @@ public class Utils {
         TimeUnit timeUnit = TimeUnit.DAYS;
         long different = timeUnit.convert(diff,TimeUnit.MILLISECONDS);
         return (int) different;
+    }
+
+    public static Date getDate() {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        return date;
     }
 }

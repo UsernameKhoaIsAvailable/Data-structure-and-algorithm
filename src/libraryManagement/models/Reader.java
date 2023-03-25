@@ -1,5 +1,7 @@
 package libraryManagement.models;
 
+import libraryManagement.utils.Utils;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -49,8 +51,9 @@ public class Reader implements Identifiable {
         this.name = name;
     }
 
-    public Date getDateOfBirth() {
-        return dateOfBirth;
+    public String getDateOfBirth() {
+        String dateOfBirthString = Utils.convertDateToString(dateOfBirth);
+        return dateOfBirthString;
     }
 
     public void setDateOfBirth(Date dateOfBirth) {
@@ -109,5 +112,18 @@ public class Reader implements Identifiable {
 
     public String getSearchableValue() {
         return id + name;
+    }
+
+    @Override
+    public String toString() {
+        String dateString = Utils.convertDateToString(date);
+        String dateOfBirthString = Utils.convertDateToString(dateOfBirth);
+        return "Name: " + name + '\n' +
+                "Id: " + id + '\n' +
+                "Date: " + dateString + '\n' +
+                "Date of birth: " + dateOfBirthString + '\n' +
+                "Gender: '" + gender + '\n' +
+                "Id card: " + idCard + '\n' +
+                "Address: " + address + '\n';
     }
 }

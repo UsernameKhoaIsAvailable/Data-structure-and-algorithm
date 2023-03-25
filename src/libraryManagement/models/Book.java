@@ -1,5 +1,7 @@
 package libraryManagement.models;
 
+import libraryManagement.utils.Utils;
+
 import java.util.Date;
 
 public class Book implements Identifiable {
@@ -25,8 +27,9 @@ public class Book implements Identifiable {
         this.id = id;
     }
 
-    public Date getImportDate() {
-        return importDate;
+    public String getImportDate() {
+        String importDateString = Utils.convertDateToString(importDate);
+        return importDateString;
     }
 
     public void setImportDate(Date importDate) {
@@ -55,5 +58,13 @@ public class Book implements Identifiable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        String importDateString = Utils.convertDateToString(importDate);
+        return "Id: " + id + '\n' +
+                "Import date: " + importDateString + "\n" +
+                "Location: " + location + '\n';
     }
 }

@@ -31,3 +31,5 @@ bin/
 .DS_Store
 /src/test/
 /src/libraryManagement/Data/
+/src/test/
+/src/libraryManagement/Data/

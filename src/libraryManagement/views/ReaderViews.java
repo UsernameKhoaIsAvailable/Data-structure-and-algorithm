@@ -11,14 +11,16 @@ public class ReaderViews {
         Scanner scanner = new Scanner(System.in);
         Storage<Reader> readerStorage = new Storage<>(Reader.class.getSimpleName());
         String id = Utils.generateId(16);
-        System.out.println("Enter registration date(dd/mm/yyyy): ");
-        String dateString  = scanner.nextLine();
-        Date date = Utils.convertStringToDate(dateString);
+        Date date = Utils.getDate();
         System.out.println("Enter name: ");
         String name = scanner.nextLine();
-        System.out.println("Enter date of birth(dd/mm/yyyy): ");
-        String dateOfBirthString = scanner.nextLine();
-        Date dateOfBirth = Utils.convertStringToDate(dateOfBirthString);
+        String dateOfBirthString;
+        Date dateOfBirth;
+        do {
+            System.out.println("Enter date of birth(dd/mm/yyyy): ");
+            dateOfBirthString = scanner.nextLine();
+            dateOfBirth = Utils.convertStringToDate(dateOfBirthString);
+        }while (dateOfBirth == null);
         System.out.println("Enter gender: ");
         String gender = scanner.nextLine();
         System.out.println("Enter id card: ");

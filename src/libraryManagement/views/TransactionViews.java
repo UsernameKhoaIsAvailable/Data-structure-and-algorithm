@@ -5,16 +5,12 @@ import libraryManagement.models.Transaction;
 import libraryManagement.models.TransactionLine;
 import libraryManagement.storage.Storage;
 import libraryManagement.utils.Utils;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 
 public class TransactionViews {
     public static Transaction addTransaction() {
         String id = Utils.generateId(14);
-        LocalDateTime localDateTime = LocalDateTime.now();
-        Date borrowDate= Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        Date borrowDate = Utils.getDate();
         return new Transaction(borrowDate, id);
     }
 
@@ -23,7 +19,7 @@ public class TransactionViews {
         Date expireDate = Utils.calculateExpireDate(borrowDate);
         String bookId = book.getId();
         TransactionLine transactionLine = new TransactionLine(id, expireDate, bookId);
-        transactionLine.setFine(price * 0.1);
+        transactionLine.setFine(price + price * 0.1);
         Storage<TransactionLine> transactionLineStorage = new Storage<>(TransactionLine.class.getSimpleName());
         transactionLineStorage.add(transactionLine);
         return transactionLine;

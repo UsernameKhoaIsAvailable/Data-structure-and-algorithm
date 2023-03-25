@@ -6,7 +6,6 @@ import java.util.Date;
 public class Title implements Identifiable {
     private String id;
     private String name;
-    private String bookshelf;
     private String category;
     private String author;
     private Date releaseDate;
@@ -14,10 +13,9 @@ public class Title implements Identifiable {
     private String language;
     private int price;
 
-    public Title(String id, String name, String bookshelf, String category, String author, Date releaseDate, String publisher, String language, int price) {
+    public Title(String id, String name, String category, String author, Date releaseDate, String publisher, String language, int price) {
         this.id = id;
         this.name = name;
-        this.bookshelf = bookshelf;
         this.category = category;
         this.author = author;
         this.releaseDate = releaseDate;
@@ -40,14 +38,6 @@ public class Title implements Identifiable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getBookshelf() {
-        return bookshelf;
-    }
-
-    public void setBookshelf(String bookshelf) {
-        this.bookshelf = bookshelf;
     }
 
     public String getCategory() {
@@ -105,9 +95,8 @@ public class Title implements Identifiable {
     @Override
     public String toString() {
         String dateString = Utils.convertDateToString(releaseDate);
-        return "Id: " + id + '\n' +
-                "Name: " + name + '\n' +
-                "Bookshelf: " + bookshelf + '\n' +
+        return "Name: " + name + '\n' +
+                "Id: " + id + '\n' +
                 "Category: " + category + '\n' +
                 "Author: " + author + '\n' +
                 "Release date: " + dateString + '\n' +
