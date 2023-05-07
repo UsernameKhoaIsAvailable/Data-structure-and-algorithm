@@ -1,20 +1,18 @@
 package libraryManagement.views;
 
 import libraryManagement.models.*;
-import libraryManagement.storage.Storage;
+import libraryManagement.storage.*;
 import libraryManagement.utils.Utils;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 
 public class Views {
     public static void views() {
-        String[] choices = {"Manage books", "Manage readers", "Borrow & Return", "Exit"};
+        String[] choices = {"Manage titles & books", "Manage readers", "Borrow & Return", "Exit"};
         while (true) {
-            int choice = showChoices(List.of(choices));
+            int choice = Utils.showChoices(List.of(choices));
             if (choice == 1) {
-                manageBooks();
+                manageTitlesAndBooks();
             } else if (choice == 2) {
                 manageReaders();
             } else if (choice == 3) {
@@ -25,299 +23,313 @@ public class Views {
         }
     }
 
-    public static int showChoices(List<String> choices, String guide) {
-        Scanner scanner = new Scanner(System.in);
-        int choice = -1;
-        ArrayList<Integer> allChoices = new ArrayList<>();
-        do {
-            System.out.println("-------- LIBRARY MANAGEMENT --------");
-            for (int i = 0; i < choices.size(); i++) {
-                allChoices.add(i + 1);
-                System.out.printf("[%d] %s\n", i + 1, choices.get(i));
-            }
-            System.out.println("------------------------------------");
-            if (guide != null) {
-                System.out.println("Choose a " + guide);
-            }
-            System.out.print("Choose: ");
-            try {
-                choice = scanner.nextInt();
-            }
-            catch (InputMismatchException e) {
-                System.out.println("Wrong format!");
-                scanner.next();
-            }
-        } while (!allChoices.contains(choice));
-        return choice;
-    }
 
-    public static int showChoices(String[] choices) {
-        return showChoices(List.of(choices), null);
-    }
-
-    public static int showChoices(List<String> choices) {
-        return showChoices(choices, null);
-    }
-
-    public static void manageBooks() {
-        String[] choices = {"Add book & title", "Delete book & title", "Search book"};
-        int choice = showChoices(List.of(choices));
-        if (choice == 1) {
-            addBookAndTitle();
-        } else if (choice == 2) {
-            deleteBookAndTitle();
-        } else {
-            searchBook();
-        }
-    }
-
-    public static void addBookAndTitle() {
-        String[] choices = {"Add title", "Add book"};
-        int choice = showChoices(List.of(choices));
-        if (choice == 1) {
-            BookViews.addTitle();
-        } else {
-            addBook();
+    public static void manageTitlesAndBooks() {
+        String[] choices = {"Add title", "Add book", "Delete title", "Delete book", "Search title", "Search book", "Return"};
+        while (true) {
+            int choice = Utils.showChoices(List.of(choices));
+            if (choice == 1) {
+                BookViews.addTitle();
+            } else if (choice == 2) {
+                addBook();
+            } else if (choice == 3) {
+                deleteTitle();
+            } else if (choice == 4) {
+                deleteBook();
+            } else if (choice == 5) {
+                searchTitle();
+            } else if (choice == 6) {
+                searchBook();
+            } else {
+                break;
+            }
         }
     }
 
     public static void addBook() {
-        Storage<Title> titleStorage = new Storage<>(Title.class.getSimpleName());
-        ArrayList<Title> titleArrayList = titleStorage.list();
-        ArrayList<String> titleName = new ArrayList<>();
-        for (Title title : titleArrayList) {
-            titleName.add(title.getName());
-        }
-        int choice = showChoices(titleName, "title");
-        Title title = titleArrayList.get(choice - 1);
+        ArrayList<String> printString = Utils.getPrintStringTitle();
+        int choice = Utils.showChoices(printString, "title");
+        TitleDAO titleDAO = new TitleDAO();
+        Title title = titleDAO.list().get(choice - 1);
         BookViews.addBook(title.getId());
     }
 
-    public static void deleteBookAndTitle() {
-        Scanner scanner = new Scanner(System.in);
-        String[] choices = {"Delete title", "Delete book"};
-        int choice = showChoices(List.of(choices));
-        Storage<Title> titleStorage = new Storage<>(Title.class.getSimpleName());
-        ArrayList<Title> titleArrayList = titleStorage.list();
-        ArrayList<String> titleName = new ArrayList<>();
-        for (Title tile : titleArrayList) {
-            titleName.add(tile.getName());
-        }
-        int index = showChoices(titleName, "title");
-        if (choice == 1) {
-            BookViews.deleteTitle(titleArrayList.get(index - 1).getId());
-        } else {
-            String keyword = titleArrayList.get(index - 1).getId();
-            Storage<Book> bookStorage = new Storage<>(Book.class.getSimpleName());
-            ArrayList<Book> bookArrayList = bookStorage.search(keyword);
-            ArrayList<String> bookInfo = new ArrayList<>();
-            for (Book book : bookArrayList) {
-                String info = book.getLocation() + " " + book.getImportDate();
-                bookInfo.add(info);
-            }
-            index = showChoices(bookInfo, "book");
-            BookViews.deleteBook(bookInfo.get(index - 1));
-        }
-    }
-
-    public static void searchBook() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter keyword: ");
-        String keyword = scanner.nextLine();
-        Storage<Title> titleStorage = new Storage<>(Title.class.getSimpleName());
-        ArrayList<Title> titleArrayList = titleStorage.search(keyword);
-        if (titleArrayList.isEmpty()) {
-            System.out.println("Book does not exist");
+    public static void deleteTitle() {
+        ArrayList<String> printString = Utils.getPrintStringTitle();
+        if (printString.isEmpty()) {
+            System.out.println("There are no titles!");
             return;
         }
-        for (Title title : titleArrayList) {
+        int choice = Utils.showChoices(printString, "title");
+        TitleDAO titleDAO = new TitleDAO();
+        Title title = titleDAO.list().get(choice - 1);
+        BookViews.deleteTitle(title.getId());
+    }
+
+    public static void deleteBook() {
+        ArrayList<String> printString = Utils.getPrintStringTitle();
+        if (printString.isEmpty()) {
+            System.out.println("There are no titles!");
+            return;
+        }
+        int choice = Utils.showChoices(printString, "title");
+        TitleDAO titleDAO = new TitleDAO();
+        Title title = titleDAO.list().get(choice - 1);
+        printString = Utils.getPrintStringBook(title.getId());
+        if (printString.isEmpty()) {
+            System.out.println("There are no books!");
+            return;
+        }
+        choice = Utils.showChoices(printString, "book");
+        BookDAO bookDAO = new BookDAO();
+        Book book = bookDAO.search(title.getId()).get(choice - 1);
+        BookViews.deleteBook(book.getId());
+    }
+
+    public static void searchTitle() {
+        String keyword = Utils.stringScanner("Enter keyword");
+        TitleDAO titleDAO = new TitleDAO();
+        ArrayList<Title> titles = titleDAO.search(keyword);
+        if (titles.isEmpty()) {
+            System.out.println("Title does not exist");
+            return;
+        }
+        for (Title title : titles) {
             System.out.println(title);
             System.out.println();
         }
     }
 
+
+    public static void searchBook() {
+        String keyword = Utils.stringScanner("Enter keyword");
+        BookDAO bookDAO = new BookDAO();
+        ArrayList<Book> books = bookDAO.search(keyword);
+        if (books.isEmpty()) {
+            System.out.println("Book does not exist");
+            return;
+        }
+        for (Book book : books) {
+            System.out.println(book);
+            System.out.println();
+        }
+    }
+
     public static void manageReaders() {
-        String[] choices = {"Add reader", "Delete reader", "Search reader"};
-        int choice = showChoices(List.of(choices));
-        if (choice == 1) {
-            ReaderViews.addReader();
-        } else if (choice == 2) {
-            deleteReader();
-        } else {
-            searchReader();
+        String[] choices = {"Add reader", "Delete reader", "Search reader", "Change reader's borrowing permission", "Return"};
+        while (true) {
+            int choice = Utils.showChoices(List.of(choices));
+            if (choice == 1) {
+                ReaderViews.add();
+            } else if (choice == 2) {
+                deleteReader();
+            } else if (choice == 3) {
+                searchReader();
+            } else if (choice == 4) {
+                changeBookBorrowed();
+            } else {
+                break;
+            }
         }
     }
 
     public static void deleteReader() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter reader name or id: ");
-        String keyword = scanner.nextLine();
-        Storage<Reader> readerStorage = new Storage<>(Reader.class.getSimpleName());
-        ArrayList<Reader> readerArrayList = readerStorage.search(keyword);
-        ArrayList<String> readerNameBirthday = new ArrayList<>();
-        for (Reader reader : readerArrayList) {
-            String nameBirthday = reader.getName() + " " + reader.getDateOfBirth();
-            readerNameBirthday.add(nameBirthday);
+        ArrayList<String> printString = Utils.getPrintStringReader();
+        if (printString.isEmpty()) {
+            System.out.println("There are no readers");
+            return;
         }
-        int index = showChoices(readerNameBirthday, "reader");
-        ReaderViews.deleteReader(readerNameBirthday.get(index - 1));
+        int choice = Utils.showChoices(printString, "reader");
+        ReaderDAO readerDAO = new ReaderDAO();
+        Reader reader = readerDAO.list().get(choice - 1);
+        ReaderViews.delete(reader.getId());
     }
 
     public static void searchReader() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter keyword: ");
-        String keyword = scanner.nextLine();
-        Storage<Reader> readerStorage = new Storage<>(Reader.class.getSimpleName());
-        ArrayList<Reader> readerArrayList = readerStorage.search(keyword);
-        if (readerArrayList.isEmpty()) {
+        String keyword = Utils.stringScanner("Enter keyword: ");
+        ReaderDAO readerDAO = new ReaderDAO();
+        ArrayList<Reader> readers = readerDAO.search(keyword);
+        if (readers.isEmpty()) {
             System.out.println("Reader does not exist");
             return;
         }
-        for (Reader reader : readerArrayList) {
+        for (Reader reader : readers) {
             System.out.println(reader);
             System.out.println();
         }
     }
 
+    public static void changeBookBorrowed() {
+        ArrayList<String> printString = Utils.getPrintStringReader();
+        if (printString.isEmpty()) {
+            System.out.println("There are no readers");
+            return;
+        }
+        int choice = Utils.showChoices(printString, "reader");
+        ReaderDAO readerDAO = new ReaderDAO();
+        Reader reader = readerDAO.list().get(choice - 1);
+        System.out.println("[1] Allow");
+        System.out.println("[2] Not allow");
+        choice = Utils.intScanner("Choose: ");
+        reader.setCanBorrow(choice == 1);
+        readerDAO.update(reader);
+    }
+
     public static void borrowAndReturn() {
-        String[] choices = {"Borrow", "Return", "Extend expire date"};
-        int choice = showChoices(choices);
-        if (choice == 1) {
-            borrow();
-        } else if (choice == 2) {
-            returnBook();
-        } else {
-            extendExpireDate();
+        String[] choices = {"Borrow book", "Return book", "Extend expire date", "Return"};
+        while (true) {
+            int choice = Utils.showChoices(choices);
+            if (choice == 1) {
+                borrowBook();
+            } else if (choice == 2) {
+                returnBook();
+            } else if (choice == 3) {
+                extendExpireDate();
+            } else {
+                break;
+            }
         }
     }
 
-    public static void borrow() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter reader name or id: ");
-        String keyword = scanner.nextLine();
-        Storage<Reader> readerStorage = new Storage<>(Reader.class.getSimpleName());
-        ArrayList<Reader> readerArrayList = readerStorage.search(keyword);
-        ArrayList<String> readerNameBirthday = new ArrayList<>();
-        for (Reader reader : readerArrayList) {
-            String nameBirthday = reader.getName() + " " + reader.getDateOfBirth();
-            readerNameBirthday.add(nameBirthday);
+    public static void borrowBook() {
+        ArrayList<String> printString = Utils.getPrintStringReader();
+        if (printString.isEmpty()) {
+            System.out.println("There are no readers");
+            return;
         }
-        int choice = showChoices(readerNameBirthday, "reader");
-        Reader reader = readerArrayList.get(choice - 1);
+        int choice = Utils.showChoices(printString, "reader");
+        ReaderDAO readerDAO = new ReaderDAO();
+        Reader reader = readerDAO.list().get(choice - 1);
         if (reader.isAllowedToBorrow()) {
-            System.out.println("Number of books borrowed: ");
-            int bookBorrowed = scanner.nextInt();
-            if (reader.getBookBorrowed() + bookBorrowed > 10) {
+            int bookBorrowed = Utils.intScanner("Number of books borrowed: ");
+            if (reader.getBookBorrowed() + bookBorrowed > 10 || bookBorrowed > 10) {
                 System.out.println("Exceed number of books borrowed");
                 return;
             }
-            Transaction transaction = TransactionViews.addTransaction();
+            printString = Utils.getPrintStringTitle();
+            if (printString.isEmpty()) {
+                System.out.println("There are no titles!");
+                return;
+            }
+            Transaction transaction = TransactionViews.addTransaction(reader.getId());
+            transaction.setTransactionLine(bookBorrowed);
             reader.setBookBorrowed(reader.getBookBorrowed() + bookBorrowed);
+            ArrayList<String> printStringTransactionLine = new ArrayList<>();
             for (int i = 0; i < bookBorrowed; i++) {
-                System.out.println("Enter book name or id: ");
-                keyword = scanner.nextLine();
-                Storage<Title> titleStorage = new Storage<>(Title.class.getSimpleName());
-                ArrayList<Title> titleArrayList = titleStorage.search(keyword);
-                ArrayList<String> titleName = new ArrayList<>();
-                for (Title title : titleArrayList) {
-                    titleName.add(title.getName());
-                }
-                choice = showChoices(titleName, "title");
-                int price = titleArrayList.get(choice - 1).getPrice();
-                keyword = titleArrayList.get(choice - 1).getId();
-                Storage<Book> bookStorage = new Storage<>(Book.class.getSimpleName());
-                ArrayList<Book> bookArrayList = bookStorage.search(keyword);
-                ArrayList<String> bookInfo = new ArrayList<>();
-                for (Book book : bookArrayList) {
-                    if (!book.isBorrowed()) {
-                        String info = book.getLocation() + " " + book.getImportDate();
-                        bookInfo.add(info);
-                    }
-                }
-                if (bookInfo.isEmpty()) {
+                printString = Utils.getPrintStringTitle();
+                choice = Utils.showChoices(printString, "title");
+                TitleDAO titleDAO = new TitleDAO();
+                Title title = titleDAO.list().get(choice - 1);
+                printString = Utils.getPrintStringNotBorrowedBook(title.getId());
+                if (printString.isEmpty()) {
                     reader.setBookBorrowed(reader.getBookBorrowed() - 1);
+                    transaction.setTransactionLine(transaction.getTransactionLine() - 1);
                     System.out.println("Out of books");
                     continue;
                 }
-                choice = showChoices(bookInfo, "book");
-                Book book = bookArrayList.get(choice - 1);
+                choice = Utils.showChoices(printString, "book");
+                BookDAO bookDAO = new BookDAO();
+                Book book = bookDAO.list(title.getId()).get(choice - 1);
                 book.setBorrowed(true);
-                bookStorage.add(book);
-                TransactionLine transactionLine = TransactionViews.addTransactionLine(transaction.getBorrowDate(), book, price);
-                transaction.addTransactionLine(transactionLine.getId());
+                bookDAO.update(book);
+                TransactionLine transactionLine = TransactionViews.addTransactionLine(transaction.getBorrowDate(), book.getId(), transaction.getId());
+                printStringTransactionLine.add(transactionLine.toString());
             }
-            if (!transaction.isTransactionLinesEmpty()) {
-                reader.addTransaction(transaction.getId());
+            readerDAO.update(reader);
+            TransactionDAO transactionDAO = new TransactionDAO();
+            transactionDAO.update(transaction);
+            System.out.println(transaction);
+            System.out.println("------------------------------------");
+            for (int i = 0; i < printStringTransactionLine.size(); i++) {
+                System.out.println(i + 1 + ". " + printStringTransactionLine.get(i));
+                System.out.println();
             }
-            readerStorage.add(reader);
-            Storage<Transaction> transactionStorage = new Storage<>(Transaction.class.getSimpleName());
-            transactionStorage.add(transaction);
         } else {
             System.out.println("Reader is not allowed to borrow");
         }
     }
 
     public static void returnBook() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter reader name or id: ");
-        String keyword = scanner.nextLine();
-        Storage<Reader> readerStorage = new Storage<>(Reader.class.getSimpleName());
-        ArrayList<Reader> readerArrayList = readerStorage.search(keyword);
-        ArrayList<String> readerInfo = new ArrayList<>();
-        for (Reader reader : readerArrayList) {
-            String info = reader.getName() + " " + reader.getDateOfBirth();
-            readerInfo.add(info);
+        ArrayList<String> printString = Utils.getPrintStringReader();
+        if (printString.isEmpty()) {
+            System.out.println("There are no readers");
+            return;
         }
-        int choice = showChoices(readerInfo, "book");
-        Reader reader = readerArrayList.get(choice - 1);
-        choice = showChoices(reader.getTransaction());
-        keyword = reader.getTransaction().get(choice - 1);
-        reader.getTransaction().remove(choice - 1);
-        Storage<Transaction> transactionStorage = new Storage<>(Transaction.class.getSimpleName());
-        Transaction transaction = transactionStorage.search(keyword).get(0);
-        choice = showChoices(transaction.getTransactionLines());
-        Storage<TransactionLine> transactionLineStorage = new Storage<>(TransactionLine.class.getSimpleName());
-        keyword = transaction.getTransactionLines().get(choice - 1);
-        transaction.getTransactionLines().remove(choice - 1);
-        TransactionLine transactionLine = transactionLineStorage.search(keyword).get(0);
-        LocalDateTime localDateTime = LocalDateTime.now();
-        Date returnDate = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        int choice = Utils.showChoices(printString, "reader");
+        ReaderDAO readerDAO = new ReaderDAO();
+        Reader reader = readerDAO.list().get(choice - 1);
+        printString = Utils.getPrintStringTransaction(reader.getId());
+        if (printString.isEmpty()) {
+            System.out.println("Reader have returned all books!");
+            return;
+        }
+        choice = Utils.showChoices(printString, "transaction");
+        TransactionDAO transactionDAO = new TransactionDAO();
+        Transaction transaction = transactionDAO.list(reader.getId()).get(choice - 1);
+        printString = Utils.getPrintStringTransactionLine(transaction.getId());
+        choice = Utils.showChoices(printString, "transaction line");
+        TransactionLineDAO transactionLineDAO = new TransactionLineDAO();
+        TransactionLine transactionLine = transactionLineDAO.list(transaction.getId()).get(choice - 1);
+        BookDAO bookDAO = new BookDAO();
+        Book book = bookDAO.get(transactionLine.getBookId());
+        TitleDAO titleDAO = new TitleDAO();
+        int price = titleDAO.get(book.getTitleId()).getPrice();
+        Date returnDate = Utils.getDate();
         transactionLine.setReturnDate(returnDate);
         int days = Utils.subtractDate(transactionLine.getExpireDate(), returnDate);
-        if (days <= 0) {
-            transactionLine.setFine(0);
-        } else {
-            System.out.printf("Return book late. Fine %f\n", transactionLine.getFine());
+        if (days > 0) {
+            transactionLine.setFine(price * 0.1);
+            System.out.println("Return late! Fine: " + transactionLine.getFine());
+            String[] choices = {"Pay", "Return"};
+            choice = Utils.showChoices(choices);
+            if (choice == 2) {
+                System.out.println("Return uncompleted");
+                return;
+            }
         }
-        readerStorage.add(reader);
-        transactionStorage.add(transaction);
+        System.out.println("Return completed");
+        transactionLine.setReturned(true);
+        transactionLineDAO.update(transactionLine);
+        transaction.setTransactionLine(transaction.getTransactionLine() - 1);
+        if (transaction.getTransactionLine() == 0) {
+            transaction.setReturned(true);
+        }
+        transactionDAO.update(transaction);
+        book.setBorrowed(false);
+        bookDAO.update(book);
+        reader.setBookBorrowed(reader.getBookBorrowed() - 1);
+        readerDAO.update(reader);
     }
 
     public static void extendExpireDate() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter reader name or id: ");
-        String keyword = scanner.nextLine();
-        Storage<Reader> readerStorage = new Storage<>(Reader.class.getSimpleName());
-        ArrayList<Reader> readerArrayList = readerStorage.search(keyword);
-        ArrayList<String> readerId = new ArrayList<>();
-        for (Reader reader : readerArrayList) {
-            readerId.add(reader.getId());
+        ArrayList<String> printString = Utils.getPrintStringReader();
+        if (printString.isEmpty()) {
+            System.out.println("There are no readers");
+            return;
         }
-        int choice = showChoices(readerId);
-        Reader reader = readerArrayList.get(choice - 1);
-        choice = showChoices(reader.getTransaction());
-        keyword = reader.getTransaction().get(choice - 1);
-        Storage<Transaction> transactionStorage = new Storage<>(Transaction.class.getSimpleName());
-        Transaction transaction = transactionStorage.search(keyword).get(0);
-        choice = showChoices(transaction.getTransactionLines());
-        Storage<TransactionLine> transactionLineStorage = new Storage<>(TransactionLine.class.getSimpleName());
-        keyword = transaction.getTransactionLines().get(choice - 1);
-        TransactionLine transactionLine = transactionLineStorage.search(keyword).get(0);
+        int choice = Utils.showChoices(printString, "reader");
+        ReaderDAO readerDAO = new ReaderDAO();
+        String readerId = readerDAO.list().get(choice - 1).getId();
+        printString = Utils.getPrintStringTransaction(readerId);
+        if (printString.isEmpty()) {
+            System.out.println("Reader have returned all books!");
+            return;
+        }
+        choice = Utils.showChoices(printString, "transaction");
+        TransactionDAO transactionDAO = new TransactionDAO();
+        String transactionId = transactionDAO.list(readerId).get(choice - 1).getId();
+        printString = Utils.getPrintStringTransactionLine(transactionId);
+        choice = Utils.showChoices(printString, "transaction line");
+        TransactionLineDAO transactionLineDAO = new TransactionLineDAO();
+        TransactionLine transactionLine = transactionLineDAO.list(transactionId).get(choice - 1);
         if (transactionLine.isExtended()) {
             System.out.println("Expire already extended");
-        } else {
-            transactionLine.setExtended(true);
-            transactionLine.setExpireDate(TransactionViews.extendExpireDate(transactionLine));
+            return;
         }
+        transactionLine.setExtended(true);
+        transactionLine.setExpireDate(Utils.extendExpireDate(transactionLine.getExpireDate()));
+        transactionLineDAO.update(transactionLine);
+        System.out.println("Expire date extended");
+        System.out.println(transactionLine);
     }
 }

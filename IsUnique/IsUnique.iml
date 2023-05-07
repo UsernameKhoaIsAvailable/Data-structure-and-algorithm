@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES />
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://C:/Program Files/MySQL/mysql-connector-j-8.0.33/src/build/java" />
+          <root url="file://C:/Program Files/MySQL/mysql-connector-j-8.0.33/src/demo/java" />
+          <root url="file://C:/Program Files/MySQL/mysql-connector-j-8.0.33/src/generated/java" />
+          <root url="file://C:/Program Files/MySQL/mysql-connector-j-8.0.33/src/legacy/java" />
+          <root url="file://C:/Program Files/MySQL/mysql-connector-j-8.0.33/src/main/core-api/java" />
+          <root url="file://C:/Program Files/MySQL/mysql-connector-j-8.0.33/src/main/core-impl/java" />
+          <root url="file://C:/Program Files/MySQL/mysql-connector-j-8.0.33/src/main/protocol-impl/java" />
+          <root url="file://C:/Program Files/MySQL/mysql-connector-j-8.0.33/src/main/user-api/java" />
+          <root url="file://C:/Program Files/MySQL/mysql-connector-j-8.0.33/src/main/user-impl/java" />
+          <root url="file://C:/Program Files/MySQL/mysql-connector-j-8.0.33/src/test/java" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+  </component>
+</module>

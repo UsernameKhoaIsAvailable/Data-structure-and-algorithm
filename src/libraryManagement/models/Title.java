@@ -1,6 +1,7 @@
 package libraryManagement.models;
 
 import libraryManagement.utils.Utils;
+
 import java.util.Date;
 
 public class Title implements Identifiable {
@@ -101,6 +102,6 @@ public class Title implements Identifiable {
                 "Author: " + author + '\n' +
                 "Release date: " + dateString + '\n' +
                 "Publisher: " + publisher + '\n' +
-                "Language: " + language + '\n';
+                "Language: " + language + "\n";
     }
 }

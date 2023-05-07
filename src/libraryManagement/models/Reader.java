@@ -2,7 +2,6 @@ package libraryManagement.models;
 
 import libraryManagement.utils.Utils;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 public class Reader implements Identifiable {
@@ -10,14 +9,14 @@ public class Reader implements Identifiable {
     private Date date;
     private String name;
     private Date dateOfBirth;
-    private String gender;
+    private boolean gender;
     private String idCard;
     private String address;
     private boolean canBorrow = true;
     private int bookBorrowed = 0;
-    private ArrayList<String> transaction = new ArrayList<>();
 
-    public Reader(String id, Date date, String name, Date dateOfBirth, String gender, String idCard, String address) {
+
+    public Reader(String id, Date date, String name, Date dateOfBirth, boolean gender, String idCard, String address) {
         this.id = id;
         this.date = date;
         this.name = name;
@@ -25,6 +24,18 @@ public class Reader implements Identifiable {
         this.gender = gender;
         this.idCard = idCard;
         this.address = address;
+    }
+
+    public Reader(String id, Date date, String name, Date dateOfBirth, boolean gender, String idCard, String address, boolean canBorrow, int bookBorrowed) {
+        this.id = id;
+        this.date = date;
+        this.name = name;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
+        this.idCard = idCard;
+        this.address = address;
+        this.canBorrow = canBorrow;
+        this.bookBorrowed = bookBorrowed;
     }
 
     public String getId() {
@@ -51,20 +62,19 @@ public class Reader implements Identifiable {
         this.name = name;
     }
 
-    public String getDateOfBirth() {
-        String dateOfBirthString = Utils.convertDateToString(dateOfBirth);
-        return dateOfBirthString;
+    public Date getDateOfBirth() {
+        return dateOfBirth;
     }
 
     public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public String getGender() {
+    public Boolean getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(Boolean gender) {
         this.gender = gender;
     }
 
@@ -85,13 +95,11 @@ public class Reader implements Identifiable {
     }
 
     public boolean isAllowedToBorrow() {
-        if(bookBorrowed >= 10) {
-            canBorrow = false;
-        }
-        else {
-            canBorrow = true;
-        }
         return canBorrow;
+    }
+
+    public void setCanBorrow(boolean canBorrow) {
+        this.canBorrow = canBorrow;
     }
 
     public int getBookBorrowed() {
@@ -102,28 +110,22 @@ public class Reader implements Identifiable {
         this.bookBorrowed = bookBorrowed;
     }
 
-    public void addTransaction(String id) {
-        transaction.add(id);
-    }
-
-    public ArrayList<String> getTransaction() {
-        return transaction;
-    }
-
-    public String getSearchableValue() {
-        return id + name;
-    }
-
     @Override
     public String toString() {
         String dateString = Utils.convertDateToString(date);
         String dateOfBirthString = Utils.convertDateToString(dateOfBirth);
+        String genderString;
+        if (gender) {
+            genderString = "Male";
+        } else {
+            genderString = "Female";
+        }
         return "Name: " + name + '\n' +
                 "Id: " + id + '\n' +
                 "Date: " + dateString + '\n' +
                 "Date of birth: " + dateOfBirthString + '\n' +
-                "Gender: '" + gender + '\n' +
+                "Gender: " + genderString + '\n' +
                 "Id card: " + idCard + '\n' +
-                "Address: " + address + '\n';
+                "Address: " + address + "\n";
     }
 }

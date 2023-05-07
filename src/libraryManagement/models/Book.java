@@ -8,15 +8,22 @@ public class Book implements Identifiable {
     private String id;
     private Date importDate;
     private String location;
-    private boolean borrowed;
-    private String name;
+    private boolean borrowed = false;
+    private String titleId;
 
-    public Book(String id,Date importDate, String location, boolean borrow, String name) {
+    public Book(String id, Date importDate, String location, String titleId) {
         this.id = id;
         this.importDate = importDate;
         this.location = location;
-        this.borrowed = borrow;
-        this.name = name;
+        this.titleId = titleId;
+    }
+
+    public Book(String id, Date importDate, String location, boolean borrowed, String titleId) {
+        this.id = id;
+        this.importDate = importDate;
+        this.location = location;
+        this.borrowed = borrowed;
+        this.titleId = titleId;
     }
 
     public String getId() {
@@ -27,9 +34,8 @@ public class Book implements Identifiable {
         this.id = id;
     }
 
-    public String getImportDate() {
-        String importDateString = Utils.convertDateToString(importDate);
-        return importDateString;
+    public Date getImportDate() {
+        return importDate;
     }
 
     public void setImportDate(Date importDate) {
@@ -52,19 +58,18 @@ public class Book implements Identifiable {
         this.borrowed = borrowed;
     }
 
-    public String getSearchableValue() {
-        return id + name;
+    public String getTitleId() {
+        return titleId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitleId(String titleId) {
+        this.titleId = titleId;
     }
 
     @Override
     public String toString() {
         String importDateString = Utils.convertDateToString(importDate);
-        return "Id: " + id + '\n' +
-                "Import date: " + importDateString + "\n" +
-                "Location: " + location + '\n';
+        return "Import date: " + importDateString + "\n" +
+                "Location: " + location + "\n";
     }
 }

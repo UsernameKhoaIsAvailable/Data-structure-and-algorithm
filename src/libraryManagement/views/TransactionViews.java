@@ -1,32 +1,30 @@
 package libraryManagement.views;
 
-import libraryManagement.models.Book;
 import libraryManagement.models.Transaction;
 import libraryManagement.models.TransactionLine;
-import libraryManagement.storage.Storage;
+import libraryManagement.storage.TransactionDAO;
+import libraryManagement.storage.TransactionLineDAO;
 import libraryManagement.utils.Utils;
+
 import java.util.Date;
 
 public class TransactionViews {
-    public static Transaction addTransaction() {
-        String id = Utils.generateId(14);
+    public static Transaction addTransaction(String readerId) {
+        String id = Utils.generateId(18);
         Date borrowDate = Utils.getDate();
-        return new Transaction(borrowDate, id);
+        Transaction transaction = new Transaction(id, borrowDate, readerId);
+        TransactionDAO transactionDAO = new TransactionDAO();
+        transactionDAO.add(transaction);
+        return transaction;
     }
 
-    public static TransactionLine addTransactionLine(Date borrowDate, Book book, int price) {
-        String id = Utils.generateId(14);
+    public static TransactionLine addTransactionLine(Date borrowDate, String bookId, String transactionId) {
+        String id = Utils.generateId(19);
         Date expireDate = Utils.calculateExpireDate(borrowDate);
-        String bookId = book.getId();
-        TransactionLine transactionLine = new TransactionLine(id, expireDate, bookId);
-        transactionLine.setFine(price + price * 0.1);
-        Storage<TransactionLine> transactionLineStorage = new Storage<>(TransactionLine.class.getSimpleName());
-        transactionLineStorage.add(transactionLine);
+        TransactionLine transactionLine = new TransactionLine(id, expireDate, bookId, transactionId);
+        transactionLine.setReturnDate(expireDate);
+        TransactionLineDAO transactionLineDAO = new TransactionLineDAO();
+        transactionLineDAO.add(transactionLine);
         return transactionLine;
-    }
-
-    public static Date extendExpireDate(TransactionLine transactionLine) {
-        Date expireDate = transactionLine.getExpireDate();
-        return Utils.extendExpireDate(expireDate);
     }
 }

@@ -1,45 +1,37 @@
 package libraryManagement.views;
 
 import libraryManagement.models.Reader;
-import libraryManagement.storage.Storage;
+import libraryManagement.storage.ReaderDAO;
 import libraryManagement.utils.Utils;
+
 import java.util.Date;
-import java.util.Scanner;
+
 
 public class ReaderViews {
-    public static void addReader() {
-        Scanner scanner = new Scanner(System.in);
-        Storage<Reader> readerStorage = new Storage<>(Reader.class.getSimpleName());
-        String id = Utils.generateId(16);
+    public static void add() {
+        ReaderDAO readerDAO = new ReaderDAO();
+        String id = Utils.generateId(15);
         Date date = Utils.getDate();
-        System.out.println("Enter name: ");
-        String name = scanner.nextLine();
-        String dateOfBirthString;
-        Date dateOfBirth;
-        do {
-            System.out.println("Enter date of birth(dd/mm/yyyy): ");
-            dateOfBirthString = scanner.nextLine();
-            dateOfBirth = Utils.convertStringToDate(dateOfBirthString);
-        }while (dateOfBirth == null);
-        System.out.println("Enter gender: ");
-        String gender = scanner.nextLine();
-        System.out.println("Enter id card: ");
-        String idCard = scanner.nextLine();
-        System.out.println("Enter address: ");
-        String address = scanner.nextLine();
+        String name = Utils.stringScanner("Enter name: ");
+        Date dateOfBirth = Utils.dateScanner("Enter date of birth(yyyy-MM-dd): ");
+        System.out.println("[1] Male");
+        System.out.println("[2] Female");
+        int choice = Utils.intScanner("Choose gender: ");
+        boolean gender = choice == 1;
+        String idCard = Utils.stringScanner("Enter id card: ");
+        String address = Utils.stringScanner("Enter address: ");
         Reader reader = new Reader(id, date, name, dateOfBirth, gender, idCard, address);
-        readerStorage.add(reader);
+        readerDAO.add(reader);
         System.out.println("Reader added");
     }
 
-    public static void deleteReader(String id) {
-        Storage<Reader> readerStorage = new Storage<>(Reader.class.getSimpleName());
-        if(!readerStorage.exists(id)) {
-            System.out.println("Reader does not exist");
+    public static void delete(String id) {
+        ReaderDAO readerDAO = new ReaderDAO();
+        if (readerDAO.exists(id)) {
+            readerDAO.delete(id);
+            System.out.println("Reader deleted");
             return;
         }
-
-        readerStorage.delete(id);
-        System.out.println("Reader deleted");
+        System.out.println("Reader does not exist");
     }
 }

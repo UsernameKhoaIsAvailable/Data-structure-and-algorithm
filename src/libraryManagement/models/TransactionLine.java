@@ -1,27 +1,38 @@
 package libraryManagement.models;
 
+import libraryManagement.utils.Utils;
+
 import java.util.Date;
 
 public class TransactionLine implements Identifiable {
     private String id;
     private Date expireDate;
-    private String bookId;
     private boolean extended = false;
     private Date returnDate;
-    private double fine;
+    private double fine = 0;
+    private boolean returned = false;
+    private String bookId;
+    private String transactionId;
 
-    public TransactionLine(String id, Date expireDate, String bookId) {
+    public TransactionLine(String id, Date expireDate, String bookId, String transactionId) {
         this.id = id;
         this.expireDate = expireDate;
         this.bookId = bookId;
+        this.transactionId = transactionId;
+    }
+
+    public TransactionLine(String id, Date expireDate, boolean extended, Date returnDate, double fine, boolean returned, String bookId, String transactionId) {
+        this.id = id;
+        this.expireDate = expireDate;
+        this.extended = extended;
+        this.returnDate = returnDate;
+        this.fine = fine;
+        this.returned = returned;
+        this.bookId = bookId;
+        this.transactionId = transactionId;
     }
 
     public String getId() {
-        return id;
-    }
-
-    @Override
-    public String getSearchableValue() {
         return id;
     }
 
@@ -69,15 +80,25 @@ public class TransactionLine implements Identifiable {
         this.fine = fine;
     }
 
-    @Override
+    public boolean isReturned() {
+        return returned;
+    }
+
+    public void setReturned(boolean returned) {
+        this.returned = returned;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
     public String toString() {
-        return "TransactionLine{" +
-                "id='" + id + '\'' +
-                ", expireDate=" + expireDate +
-                ", bookId='" + bookId + '\'' +
-                ", extended=" + extended +
-                ", returnDate=" + returnDate +
-                ", fine=" + fine +
-                '}';
+        String expireDateString = Utils.convertDateToString(expireDate);
+        return "Expire date: " + expireDateString + "\n" +
+                "Book id: " + bookId;
     }
 }
