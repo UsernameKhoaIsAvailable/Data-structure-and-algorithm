@@ -7,28 +7,6 @@ import java.sql.*;
 import java.util.Date;
 
 public class BookDAO extends AbstractDAO<Book> {
-    public BookDAO() {
-        try {
-            Connection connection = MyConnection.getConnection();
-            Statement statement = connection.createStatement();
-            String sqlQuery = """
-                    CREATE TABLE IF NOT EXISTS book (
-                            Id varchar(20) NOT NULL,
-                            Import_date DATE,
-                            Location varchar(255),
-                            Borrowed BOOL,
-                            TitleId varchar(20),
-                            PRIMARY KEY (Id),
-                            FOREIGN KEY (TitleId) REFERENCES title(Id)
-                            );
-                    """;
-            statement.executeUpdate(sqlQuery);
-            statement.close();
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     protected String getSelectSQL() {
         return "SELECT * FROM book WHERE Id = ?";
@@ -71,7 +49,7 @@ public class BookDAO extends AbstractDAO<Book> {
 
     public void add(Book book) {
         try {
-            Connection connection = MyConnection.getConnection();
+            Connection connection = Database.getConnection();
             String sqlQuery = """
                     INSERT INTO book
                     VALUES (?, ?, ?, ?, ?)
@@ -92,7 +70,7 @@ public class BookDAO extends AbstractDAO<Book> {
 
     public void update(Book book) {
         try {
-            Connection connection = MyConnection.getConnection();
+            Connection connection = Database.getConnection();
             String sqlQuery = """
                     UPDATE book
                     SET Import_date = ?, Location = ?, Borrowed = ?, TitleId = ?

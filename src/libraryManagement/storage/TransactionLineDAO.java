@@ -6,32 +6,6 @@ import libraryManagement.utils.Utils;
 import java.sql.*;
 
 public class TransactionLineDAO extends AbstractDAO<TransactionLine> {
-    public TransactionLineDAO() {
-        try {
-            Connection connection = MyConnection.getConnection();
-            Statement statement = connection.createStatement();
-            String sqlQuery = """
-                    CREATE TABLE IF NOT EXISTS transaction_line (
-                            Id varchar(20) NOT NULL,
-                            Expire_date DATE,
-                            Extended BOOL,
-                            Return_date DATE,
-                            Fine DOUBLE(10,2),
-                            Returned BOOL,
-                            BookId varchar(20),
-                            TransactionId varchar(20),
-                            PRIMARY KEY (Id),
-                            FOREIGN KEY (BookId) REFERENCES book(Id),
-                            FOREIGN KEY (TransactionId) REFERENCES transaction(Id)
-                            );
-                    """;
-            statement.executeUpdate(sqlQuery);
-            statement.close();
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     protected String getSelectSQL() {
         return "SELECT * FROM transaction_line WHERE Id = ?";
@@ -77,7 +51,7 @@ public class TransactionLineDAO extends AbstractDAO<TransactionLine> {
 
     public void add(TransactionLine transactionLine) {
         try {
-            Connection connection = MyConnection.getConnection();
+            Connection connection = Database.getConnection();
             String sqlQuery = """
                     INSERT INTO transaction_line
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -101,7 +75,7 @@ public class TransactionLineDAO extends AbstractDAO<TransactionLine> {
 
     public void update(TransactionLine transactionLine) {
         try {
-            Connection connection = MyConnection.getConnection();
+            Connection connection = Database.getConnection();
             String sqlQuery = """
                     UPDATE transaction_line
                     SET Expire_date = ?, Extended = ?, Return_date = ?, Fine = ?, Returned = ?, BookId = ?, TransactionId = ?

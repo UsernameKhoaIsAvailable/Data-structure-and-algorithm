@@ -24,39 +24,77 @@ public class BookViews {
         System.out.println("Title added!");
     }
 
-    public static void addBook(String titleId) {
+    public static void addBook() {
+        Title title = Utils.getChosenTitle();
+        if (title == null) {
+            return;
+        }
+
         BookDAO bookDAO = new BookDAO();
         String id = Utils.generateId(17);
         Date importDate = Utils.getDate();
         String location = Utils.stringScanner("Enter location of book: ");
-        Book book = new Book(id, importDate, location, titleId);
+        Book book = new Book(id, importDate, location, title.getId());
         bookDAO.add(book);
         System.out.println("Book added!");
     }
 
-    public static void deleteBook(String id) {
-        BookDAO bookDAO = new BookDAO();
-        if (bookDAO.exists(id)) {
-            bookDAO.delete(id);
-            System.out.println("Book deleted!");
+    public static void deleteBook() {
+        Title title = Utils.getChosenTitle();
+        if (title == null) {
             return;
         }
-        System.out.println("Book does not exist!");
 
+        BookDAO bookDAO = new BookDAO();
+        Book book = Utils.getChosenBook(title.getId());
+        if (book == null) {
+            return;
+        }
+        bookDAO.delete(book.getId());
+        System.out.println("Book deleted!");
     }
 
-    public static void deleteTitle(String titleId) {
+    public static void deleteTitle() {
+        Title title = Utils.getChosenTitle();
         TitleDAO titleDAO = new TitleDAO();
-        BookDAO bookDAO = new BookDAO();
-        if (!titleDAO.exists(titleId)) {
-            System.out.println("Title does not exist!");
+        if (title == null) {
             return;
         }
-        titleDAO.delete(titleId);
-        ArrayList<Book> arrayList = bookDAO.search(titleId);
+        titleDAO.delete(title.getId());
+
+        BookDAO bookDAO = new BookDAO();
+        ArrayList<Book> arrayList = bookDAO.search(title.getId());
         for (Book book : arrayList) {
             bookDAO.delete(book.getId());
         }
-        System.out.println("Title deleted!");
+        System.out.println("Title and related books deleted!");
+    }
+
+    public static void searchTitle() {
+        String keyword = Utils.stringScanner("Enter keyword");
+        TitleDAO titleDAO = new TitleDAO();
+        ArrayList<Title> titles = titleDAO.search(keyword);
+        if (titles.isEmpty()) {
+            System.out.println("Title does not exist");
+            return;
+        }
+        for (Title title : titles) {
+            System.out.println(title);
+            System.out.println();
+        }
+    }
+
+    public static void searchBook() {
+        String keyword = Utils.stringScanner("Enter keyword");
+        BookDAO bookDAO = new BookDAO();
+        ArrayList<Book> books = bookDAO.search(keyword);
+        if (books.isEmpty()) {
+            System.out.println("Book does not exist");
+            return;
+        }
+        for (Book book : books) {
+            System.out.println(book);
+            System.out.println();
+        }
     }
 }

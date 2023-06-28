@@ -7,30 +7,6 @@ import java.sql.*;
 import java.util.Date;
 
 public class TitleDAO extends AbstractDAO<Title> {
-    public TitleDAO() {
-        try {
-            Connection connection = MyConnection.getConnection();
-            Statement statement = connection.createStatement();
-            String sqlQuery = """
-                    CREATE TABLE IF NOT EXISTS title (
-                            Id varchar(20) NOT NULL,
-                            Name varchar(255) NOT NULL,
-                            Category varchar(255),
-                            Author varchar(30),
-                            Release_date DATE,
-                            Publisher varchar(255),
-                            Language varchar(30),
-                            Price INT,
-                            PRIMARY KEY (Id)
-                            );
-                    """;
-            statement.executeUpdate(sqlQuery);
-            statement.close();
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     protected String getSelectSQL() {
         return "SELECT * FROM title WHERE Id = ?";
@@ -73,7 +49,7 @@ public class TitleDAO extends AbstractDAO<Title> {
 
     public void add(Title title) {
         try {
-            Connection connection = MyConnection.getConnection();
+            Connection connection = Database.getConnection();
             String sqlQuery = """
                     INSERT INTO title
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -97,7 +73,7 @@ public class TitleDAO extends AbstractDAO<Title> {
 
     public void update(Title title) {
         try {
-            Connection connection = MyConnection.getConnection();
+            Connection connection = Database.getConnection();
             String sqlQuery = """
                     UPDATE title
                     SET Name = ?, Category = ?, Author = ?, Release_date = ?, Publisher = ?, Language = ?, Price = ?

@@ -7,31 +7,6 @@ import java.sql.*;
 
 
 public class ReaderDAO extends AbstractDAO<Reader> {
-    public ReaderDAO() {
-        try {
-            Connection connection = MyConnection.getConnection();
-            Statement statement = connection.createStatement();
-            String sqlQuery = """
-                            CREATE TABLE IF NOT EXISTS reader (
-                            Id varchar(20) NOT NULL,
-                            Name varchar(30) NOT NULL,
-                            Gender BOOL,
-                            Date_of_birth DATE,
-                            Id_card varchar(20),
-                            Address varchar(255),
-                            Date DATE,
-                            Can_borrow BOOL,
-                            Number_of_book_borrowed INT,
-                            PRIMARY KEY (Id)
-                            );
-                    """;
-            statement.executeUpdate(sqlQuery);
-            statement.close();
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     protected String getSelectSQL() {
         return "SELECT * FROM reader WHERE Id = ?";
@@ -75,7 +50,7 @@ public class ReaderDAO extends AbstractDAO<Reader> {
 
     public void add(Reader reader) {
         try {
-            Connection connection = MyConnection.getConnection();
+            Connection connection = Database.getConnection();
             String sqlQuery = """
                     INSERT INTO reader
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -100,7 +75,7 @@ public class ReaderDAO extends AbstractDAO<Reader> {
 
     public void update(Reader reader) {
         try {
-            Connection connection = MyConnection.getConnection();
+            Connection connection = Database.getConnection();
             String sqlQuery = """
                     UPDATE reader
                     SET Name = ?, Gender = ?, Date_of_birth = ?, Id_card = ?, Address = ?, Date = ?, Can_borrow = ?, Number_of_book_borrowed = ?

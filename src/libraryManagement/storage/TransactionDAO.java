@@ -6,28 +6,6 @@ import libraryManagement.utils.Utils;
 import java.sql.*;
 
 public class TransactionDAO extends AbstractDAO<Transaction> {
-    public TransactionDAO() {
-        try {
-            Connection connection = MyConnection.getConnection();
-            Statement statement = connection.createStatement();
-            String sqlQuery = """
-                    CREATE TABLE IF NOT EXISTS transaction (
-                            Id varchar(20) NOT NULL,
-                            Borrow_date DATE,
-                            Number_of_transaction_line INT,
-                            Returned BOOL,
-                            ReaderId varchar(20),
-                            PRIMARY KEY (Id),
-                            FOREIGN KEY (ReaderId) REFERENCES reader(Id)
-                            );
-                    """;
-            statement.executeUpdate(sqlQuery);
-            statement.close();
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     protected String getSelectSQL() {
         return "SELECT * FROM transaction WHERE Id = ?";
@@ -71,7 +49,7 @@ public class TransactionDAO extends AbstractDAO<Transaction> {
 
     public void add(Transaction transaction) {
         try {
-            Connection connection = MyConnection.getConnection();
+            Connection connection = Database.getConnection();
             String sqlQuery = """
                     INSERT INTO transaction
                     VALUES (?, ?, ?, ?, ?)
@@ -92,7 +70,7 @@ public class TransactionDAO extends AbstractDAO<Transaction> {
 
     public void update(Transaction transaction) {
         try {
-            Connection connection = MyConnection.getConnection();
+            Connection connection = Database.getConnection();
             String sqlQuery = """
                     UPDATE transaction
                     SET Borrow_date = ?, Number_of_transaction_line = ?, Returned = ?, ReaderId = ?

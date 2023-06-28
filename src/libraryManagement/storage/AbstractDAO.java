@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public abstract class AbstractDAO<T extends Identifiable> {
     public T get(String id) {
         try {
-            Connection connection = MyConnection.getConnection();
+            Connection connection = Database.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(getSelectSQL());
             preparedStatement.setString(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -30,10 +30,12 @@ public abstract class AbstractDAO<T extends Identifiable> {
 
     public void delete(String id) {
         try {
-            Connection connection = MyConnection.getConnection();
+            Connection connection = Database.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(getDeleteSQL());
             preparedStatement.setString(1, id);
+            preparedStatement.executeUpdate("SET FOREIGN_KEY_CHECKS=0");
             preparedStatement.executeUpdate();
+            preparedStatement.executeUpdate("SET FOREIGN_KEY_CHECKS=1");
             connection.close();
             preparedStatement.close();
         } catch (SQLException e) {
@@ -45,7 +47,7 @@ public abstract class AbstractDAO<T extends Identifiable> {
 
     public boolean exists(String id) {
         try {
-            Connection connection = MyConnection.getConnection();
+            Connection connection = Database.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(getExistsSQL());
             preparedStatement.setString(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -83,7 +85,7 @@ public abstract class AbstractDAO<T extends Identifiable> {
 
     public ArrayList<T> search(String keyword) {
         try {
-            Connection connection = MyConnection.getConnection();
+            Connection connection = Database.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(getSearchSQL());
             preparedStatement.setString(1, keyword);
             preparedStatement.setString(2, keyword);
@@ -98,7 +100,7 @@ public abstract class AbstractDAO<T extends Identifiable> {
 
     public ArrayList<T> list() {
         try {
-            Connection connection = MyConnection.getConnection();
+            Connection connection = Database.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(getListSQL());
             return executeSQL(connection, preparedStatement);
         } catch (SQLException e) {
@@ -111,7 +113,7 @@ public abstract class AbstractDAO<T extends Identifiable> {
 
     public ArrayList<T> list(String id) {
         try {
-            Connection connection = MyConnection.getConnection();
+            Connection connection = Database.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(getListSQL(id));
             preparedStatement.setString(1, id);
             return executeSQL(connection, preparedStatement);

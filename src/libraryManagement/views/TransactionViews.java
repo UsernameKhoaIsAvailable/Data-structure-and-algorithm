@@ -22,7 +22,7 @@ public class TransactionViews {
         String id = Utils.generateId(19);
         Date expireDate = Utils.calculateExpireDate(borrowDate);
         TransactionLine transactionLine = new TransactionLine(id, expireDate, bookId, transactionId);
-        transactionLine.setReturnDate(expireDate);
+//        transactionLine.setReturnDate(expireDate);
         TransactionLineDAO transactionLineDAO = new TransactionLineDAO();
         transactionLineDAO.add(transactionLine);
         return transactionLine;

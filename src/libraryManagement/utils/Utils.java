@@ -141,67 +141,110 @@ public class Utils {
         return showChoices(choices, null);
     }
 
-    public static ArrayList<String> getPrintStringTitle() {
+    public static Title getChosenTitle() {
         TitleDAO titleDAO = new TitleDAO();
         ArrayList<Title> titles = titleDAO.list();
         ArrayList<String> printString = new ArrayList<>();
+
         for (Title title : titles) {
             printString.add(title.toString());
         }
-        return printString;
+
+        if (printString.isEmpty()) {
+            System.out.println("There are no titles!");
+            return null;
+        }
+
+        int choice = showChoices(printString, "title");
+        return titleDAO.list().get(choice - 1);
     }
 
-    public static ArrayList<String> getPrintStringBook(String titleId) {
+    public static Book getChosenBook(String titleId) {
         BookDAO bookDAO = new BookDAO();
         ArrayList<Book> books = bookDAO.search(titleId);
         ArrayList<String> printString = new ArrayList<>();
+
         for (Book book : books) {
             printString.add(book.toString());
         }
-        return printString;
+
+        if (printString.isEmpty()) {
+            System.out.println("There are no books!");
+            return null;
+        }
+
+        int choice = showChoices(printString, "book");
+        return bookDAO.search(titleId).get(choice - 1);
     }
 
-    public static ArrayList<String> getPrintStringNotBorrowedBook(String titleId) {
+    public static Book getChosenNotBorrowedBook(String titleId) {
         BookDAO bookDAO = new BookDAO();
         ArrayList<Book> books = bookDAO.list(titleId);
         ArrayList<String> printString = new ArrayList<>();
+
         for (Book book : books) {
             printString.add(book.toString());
         }
-        return printString;
+
+        if (printString.isEmpty()) {
+            System.out.println("Out of books");
+            return null;
+        }
+
+        int choice = showChoices(printString, "book");
+        return bookDAO.list(titleId).get(choice - 1);
     }
 
-    public static ArrayList<String> getPrintStringReader() {
+    public static Reader getChosenReader() {
         ReaderDAO readerDAO = new ReaderDAO();
         ArrayList<Reader> readers = readerDAO.list();
         ArrayList<String> printString = new ArrayList<>();
+
         for (Reader reader : readers) {
             printString.add(reader.toString());
         }
-        return printString;
+
+        if (printString.isEmpty()) {
+            System.out.println("There are no readers");
+            return null;
+        }
+
+        int choice = showChoices(printString, "reader");
+        return readerDAO.list().get(choice - 1);
     }
 
-    public static ArrayList<String> getPrintStringTransaction(String readerId) {
+    public static Transaction getChosenTransaction(String readerId) {
         TransactionDAO transactionDAO = new TransactionDAO();
         ArrayList<Transaction> transactions = transactionDAO.list(readerId);
         ArrayList<String> printString = new ArrayList<>();
+
         for (Transaction transaction : transactions) {
             printString.add(transaction.toString());
         }
-        return printString;
+
+        if (printString.isEmpty()) {
+            System.out.println("Reader have returned all books!");
+            return null;
+        }
+
+        int choice = showChoices(printString, "transaction");
+        return transactionDAO.list(readerId).get(choice - 1);
     }
 
-    public static ArrayList<String> getPrintStringTransactionLine(String transactionId) {
+    public static TransactionLine getChosenTransactionLine(String transactionId) {
         TransactionLineDAO transactionLineDAO = new TransactionLineDAO();
         BookDAO bookDAO = new BookDAO();
         TitleDAO titleDAO = new TitleDAO();
         ArrayList<TransactionLine> transactionLines = transactionLineDAO.list(transactionId);
         ArrayList<String> printString = new ArrayList<>();
+
         for (TransactionLine transactionLine : transactionLines) {
             Book book = bookDAO.get(transactionLine.getBookId());
             Title title = titleDAO.get(book.getTitleId());
             printString.add(transactionLine + "\nLocation: " + book.getLocation() + "\nTitle: " + title.getName() + "\n");
         }
-        return printString;
+
+        int choice = showChoices(printString, "transaction line");
+        return transactionLineDAO.list(transactionId).get(choice - 1);
     }
 }
