@@ -8,7 +8,7 @@ import java.sql.Statement;
 public class Database {
     private static final String DATABASE_URL = "jdbc:mysql://localhost:3306/library_management?allowMultiQueries=true";
     private static final String USER = "root";
-    private static final String PASS = "Pass@123456";
+    private static final String PASS = "12345678";
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(DATABASE_URL, USER, PASS);
